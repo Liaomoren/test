@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mysql5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql5
+  namespace: mysql5
+spec:
+  replicas: 3   ###副本数
+  selector:
+    matchLabels:
+      app: mysql5
+  template:
+    metadata:
+      labels:
+        app: mysql5
+    spec:
+      containers:
+      - name: mysql5
+        image: mysql:5.7
+        ports:
+        - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql5
+  namespace: mysql5
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    nodePort: 30005
+  selector:
+    app: mysql5
+  type: NodePort

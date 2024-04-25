@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-test                  #定义Deployment的名称
+spec:
+  replicas: 3                       #副本数量
+  selector:                         #Deployment控制器的配置
+    matchLabels:                    #定义标签选择器，用于选择匹配run=nginx-test标签的Pod
+      run: nginx-test
+  template:                         #Pod的模板配置
+    metadata:
+      labels:
+        run: nginx-test
+    spec:
+      containers:
+      - name: nginx-test
+        image: nginx:latest
+        ports:
+        - containerPort: 80

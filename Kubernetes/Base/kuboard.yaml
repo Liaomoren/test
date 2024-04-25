@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kuboard
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kuboard
+  namespace: kuboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kuboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kuboard
+  namespace: kuboard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuboard
+  namespace: kuboard
+spec:
+  replicas: 3   ###副本数
+  selector:
+    matchLabels:
+      app: kuboard
+  template:
+    metadata:
+      labels:
+        app: kuboard
+    spec:
+      serviceAccountName: kuboard
+      containers:
+      - name: kuboard
+        image: eipwork/kuboard:v3
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuboard
+  namespace: kuboard
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30000
+  selector:
+    app: kuboard
+  type: NodePort

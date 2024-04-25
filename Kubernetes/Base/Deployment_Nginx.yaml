@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-web
+  namespace: nginx-web
+spec:
+  replicas: 3   ###副本数
+  selector:
+    matchLabels:
+      app: nginx-web
+  template:
+    metadata:
+      labels:
+        app: nginx-web
+    spec:
+      containers:
+      - name: nginx-web
+        image: nginx:1.25
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-web
+  namespace: nginx-web
+spec:
+  ports:
+  - port: 80                              #Service暴露的端口
+    targetPort: 80                        #暴露端口所映射的容器端口
+    nodePort: 30004                       #port rang 30000-32767 暴露在集群节点IP的端口，通过访问该节点IP+Port访问到集群内部
+  selector:
+    app: nginx-web
+  type: NodePort                          #NodePort类型，可在集群节点上公开一个静态端口

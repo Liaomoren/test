@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lcf-zizhi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lcf-zizhi
+  namespace: lcf-zizhi
+spec:
+  replicas: 3   ###副本数
+  selector:
+    matchLabels:
+      app: lcf-zizhi
+  template:
+    metadata:
+      labels:
+        app: lcf-zizhi
+    spec:
+      containers:
+      - name: lcf-zizhi
+        image: registry.cn-hangzhou.aliyuncs.com/alicloundrepository/cyanandgemini:centos_v7.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lcf-zizhi
+  namespace: lcf-zizhi
+spec:
+  ports:
+  - port: 80                              #Service暴露的端口
+    targetPort: 80                        #暴露端口所映射的容器端口
+    nodePort: 30007                       #port rang 30000-32767 暴露在集群节点IP的端口，通过访问该节点IP+Port访问到集群内部
+  selector:
+    app: lcf-zizhi
+  type: NodePort                          #NodePort类型，可在集群节点上公开一个静态端口

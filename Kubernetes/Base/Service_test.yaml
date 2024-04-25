@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-test
+  labels:                       #Service的标签，这里和前面创建的Deployment标签匹配，用来关联Deployment和Service
+    run: nginx-test             
+
+spec:                           #定义Service的规格，其中包括了Service的类型、端口、选择器等
+  type: NodePort                #NodePort类型，可在集群节点上公开一个静态端口
+
+  ports:
+  - port: 80                    #Service暴露的端口
+    targetPort: 80              #暴露端口所映射的容器端口
+    nodePort: 30005             #port rang 30000-32767 暴露在集群节点IP的端口，通过访问该节点IP+Port访问到集群内部
+  selector:
+    app: nginx-test
